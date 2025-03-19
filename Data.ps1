@@ -1,11 +1,15 @@
 # Currently, I do not take into account missing values ​​in records.
-function Get-Value($f) {
-    foreach ($r in $input) {
-        $command = Get-Command $f
-        $params = $command.Parameters.Values # Assume parameters ​values ​are ordered by the script block argument order
-        $values = $params | ForEach-Object { $r[$_.Name] }
-        
-        $command.ScriptBlock.Invoke($values)
+function local:getValue($funtion, $record) {
+    $command = Get-Command $function
+    $params = $command.Parameters.Values # Assume parameters ​values ​are ordered by the script block argument order
+    $values = $params | ForEach-Object { $record[$_.Name] }
+    
+    $command.ScriptBlock.Invoke($values)
+}
+
+function Get-Value($function) {
+    foreach ($record in $input) {
+        getValue $function $record
     }
 }
 
