@@ -17,3 +17,15 @@ function Get-Value($function) {
 # $records = @{left = 10; right = 15 }, @{left = 20; right = 32 } 
 # $records | Get-Value myAdd
 # 25, 52
+
+function Add-Value($function) {
+    foreach ($record in $input) {
+        $record | Select-Object *, @{Name = $function; Expression = { getValue $function $record } }
+    }
+}
+
+# $records | Add-Value myAdd
+# left right myAdd
+# ---- ----- -----
+#   10    15    25
+#   20    32    52
