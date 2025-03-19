@@ -1,5 +1,5 @@
 # Currently, I do not take into account missing values ​​in records.
-function local:getValue($funtion, $record) {
+function local:getValue($function, $record) {
     $command = Get-Command $function
     $params = $command.Parameters.Values # Assume parameters ​values ​are ordered by the script block argument order
     $values = $params | ForEach-Object { $record[$_.Name] }
