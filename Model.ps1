@@ -6,5 +6,5 @@ function Set-Model() {
     ) { }
 }
 
-function local:replace($s) { $s -match '\[(.+)\]\s*(\S+)' ? ($Matches.Item(1) -as [type]), $Matches.Item(2) :  @([object], $s) }
-function local:normalize($p) { $p.Count -eq 1 ? (replace $p) : $p }
+function local:normalize([Parameter(ValueFromPipeline)] $field) { process { $field.Count -eq 1 ? (replace $field) : $field } }
+function local:replace([Parameter(ValueFromPipeline)] [string] $field) { process { $field -match '\[(.+)\]\s*(\S+)' ? @(($Matches.Item(1) -as [type]), $Matches.Item(2)) :  @([object], $field) } }
