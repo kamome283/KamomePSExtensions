@@ -11,3 +11,13 @@ function Unlock-Bitwarden([pscredential] $cred) {
         default { bw login --raw }
     }
 }
+
+# 後々ほかのファイルに分離したい
+function Get-CredentialWithOtp {
+    Write-Host 'Enter your credentials and onetime password.'
+    $user = Read-Host 'UserName'
+    $password = Read-Host 'Password' -AsSecureString
+    $cred = [pscredential]::new($user, $password)
+    $otp = Read-Host 'Onetime Password'
+    $cred | Add-Member OTP $otp -PassThru
+}
