@@ -1,4 +1,6 @@
-$ENV_NOT_SET = 'xxx'
+. (Join-Path $PSScriptRoot Bitwarden.ps1)
+
+$local:ENV_NOT_SET = 'xxx'
 
 function local:checkUserEnvironmentVariable([string] $key) {
     $value = [System.Environment]::GetEnvironmentVariable($key, [System.EnvironmentVariableTarget]::User)
@@ -7,7 +9,8 @@ function local:checkUserEnvironmentVariable([string] $key) {
 
 # Set a user environment variable using Bitwarden CLI
 function local:setUserEnvironmentVariable([string] $key, [string] $note = $null) {
-    $value = Write-Error 'Not implemented'
+    Unlock-Bitwarden
+    $value = bw get notes ($note ?? $key)
     [System.Environment]::SetEnvironmentVariable($key, $value, [System.EnvironmentVariableTarget]::User)
 }
 
