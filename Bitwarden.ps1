@@ -1,15 +1,21 @@
-function Unlock-Bitwarden([pscredential] $cred) {
+function local:checkStatus {
     $unlocked = bw unlock --check *> $null && $true
-    if ($unlocked) { return }
-    $logined = bw login --check *> $null && $true
-    $env:BW_SESSION = switch ($null) {
-        { $logined -and $cred } { bw unlock (ConvertFrom-SecureString $cred.Password -AsPlainText) --raw }
-        { $logined } { bw unlock --raw }
-        { $cred } { 
-            bw login $cred.UserName (ConvertFrom-SecureString $cred.Password -AsPlainText) --code $cred.OTP --raw
-        }
-        default { bw login --raw }
+    $logined = $unlocked -or (bw login --check *> $null && $true)
+    return @{ logined = $logined; unlocked = $unlocked }
+}
+
+function Unlock-Bitwarden([pscredential] $cred) {
+    $status = checkStatus
+    if ($status.unlocked) { return }
+    $logined = $status.logined
+    $env:BW_SESSION = if ($logined -and $cred) {
+        bw unlock (ConvertFrom-SecureString $cred.Password -AsPlainText) --raw 
     }
+    elseif ($logined) { bw unlock --raw }
+    elseif ($cred) {
+        bw login $cred.UserName (ConvertFrom-SecureString $cred.Password -AsPlainText) --code $cred.OTP --raw
+    }
+    else { bw login --raw }
 }
 
 # 後々ほかのファイルに分離したい
